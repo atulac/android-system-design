@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Android system-design practice: grouped interview questions, a countdown timer walkthrough with HLD and LLD, and a linked concept reference.">
+  <title>Android System Design</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="index.html#main">Skip to problems</a>
+<header class="site-head">
+  <a class="brand" href="./index.html">Android System Design</a>
+  <nav aria-label="Main navigation"><a href="./index.html" aria-current="page">Problems</a><a href="problems/countdown-timer/index.html">Countdown timer</a><a href="concepts/index.html">Concepts</a></nav>
+</header>
+<div class="layout">
+  <aside class="rail" aria-label="Problem groups">
+    <details class="contents"><summary>Study groups</summary>
+    <p class="rail-title">Study order</p>
+    <nav aria-label="Problem families"><ol><li><a href="index.html#foundations"><span class="num">01</span>Android foundations</a></li><li><a href="index.html#timers"><span class="num">02</span>Timers and playback</a></li><li><a href="index.html#search"><span class="num">03</span>Search and large lists</a></li><li><a href="index.html#libraries"><span class="num">04</span>Libraries and concurrency</a></li><li><a href="index.html#device"><span class="num">05</span>Device data and background work</a></li><li><a href="index.html#sync"><span class="num">06</span>Offline data and synchronization</a></li><li><a href="index.html#live"><span class="num">07</span>Shared state and live connections</a></li><li><a href="index.html#media"><span class="num">08</span>Full app design</a></li><li><a href="index.html#review"><span class="num">09</span>Design review and debugging</a></li></ol>
+    <div class="rail-extra"><a href="index.html#about">About the questions</a><a href="questions.csv" download>Download question list</a></div></nav>
+    </details>
+  </aside>
+  <main id="main">
+    <div class="eyebrow">Interview preparation</div>
+    <h1>Android System Design</h1>
+    <p class="lead">Interview questions and design notes for Android developers, organized by topic.</p>
+    <p>Begin with a countdown timer, then work through the groups below. The order moves from a single-device state model toward networked and collaborative apps. It is a suggested study order, not an interview difficulty rating.</p>
+    <section class="start-here" aria-labelledby="start-title">
+      <p class="stage-label">Available walkthrough</p>
+      <h2 id="start-title"><a href="problems/countdown-timer/index.html">Countdown timer</a></h2>
+      <p>Requirements, state transitions, timekeeping, high-level architecture, low-level interfaces, recovery and tests.</p>
+      <p class="start-links"><a href="problems/countdown-timer/index.html#scope">Read from the start</a><a href="problems/countdown-timer/index.html#revision">Revision notes</a><a href="concepts/index.html">Concept reference</a></p>
+    </section>
+    <p class="meta">37 questions and reference topics. Only the countdown timer has a worked walkthrough so far.</p>
+    <details class="study-notes"><summary>Using this with a study partner</summary><p>Choose one question from a group. Agree on requirements, draw a high-level design, then work through the data model, interfaces and failure cases. Compare your reasoning before reading a walkthrough. When a concept comes up again, use the reference entry and discuss what changes in the new problem.</p></details>
+    <section class="stage family" id="foundations" aria-labelledby="foundations-title">
+  <div class="stage-label">01 / Study group</div>
+  <h2 id="foundations-title">Android foundations</h2>
+  <p class="family-intro">Review the platform topics you need before attempting the larger designs. These entries are exercises and reference notes, not full system-design problems.</p>
+  <article class="problem" id="android-basics" aria-labelledby="android-basics-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Topic checklist</div>
+  <h3 id="android-basics-title">Android basics</h3>
+  <p>Review Context and resources; Activity and ViewModel lifecycles; Kotlin versus Java; coroutines, structured concurrency, Flow, StateFlow and LiveData; Handler/Looper and threading; dependency injection; MVVM, MVI, MVP, Redux and Clean Architecture; networking; Room, DataStore and SharedPreferences; WorkManager, foreground services, executors and alarms; RecyclerView and Compose; memory leaks, profiling and application security.</p>
+  <details><summary>Source and scope</summary><p>A collected revision checklist, not one interview question. The linked discussion is a related Android question list, not verification that Google asked every topic.</p><p class="source-note"><a href="https://leetcode.com/discuss/post/4802219/android-interview-questions-by-vansh_sha-t8mw/" aria-label="Source for Android basics">Source discussion</a></p></details>
+
+</article><article class="problem" id="view-hierarchy" aria-labelledby="view-hierarchy-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Algorithm exercise</div>
+  <h3 id="view-hierarchy-title">View hierarchy traversal</h3>
+  <p>Describe how to visit and print every View in an Android view hierarchy.</p>
+  <details><summary>Source and scope</summary><p>Saved exercise; Google attribution has not been independently verified.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="single-activity" aria-labelledby="single-activity-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Prompt missing</div>
+  <h3 id="single-activity-title">Multiple Activities to a single Activity</h3>
+  <p>Only this topic title was saved. The original migration scenario and constraints are missing.</p>
+  <details><summary>Source and scope</summary><p>Agree on a practice scenario before attempting a design; do not infer an interview prompt from the title.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="ui-perception" aria-labelledby="ui-perception-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Supporting topic</div>
+  <h3 id="ui-perception-title">Perceived UI performance</h3>
+  <p>Discuss perceived responsiveness as a UI design concern.</p>
+  <details><summary>Source and scope</summary><p>A supporting note, not a reported interview question.</p><p class="source-note">No public source link available.</p></details>
+
+</article>
+</section><section class="stage family" id="timers" aria-labelledby="timers-title">
+  <div class="stage-label">02 / Study group</div>
+  <h2 id="timers-title">Timers and playback</h2>
+  <p class="family-intro">Start with a local state model and clocks. Then consider background completion, notifications and recovery. Stopwatch and media playback add different behavior; they are not alternate names for a countdown.</p>
+  <article class="problem" id="countdown-pause-reset" aria-labelledby="countdown-pause-reset-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Coding exercise</div>
+  <h3 id="countdown-pause-reset-title">Countdown timer with pause and reset</h3>
+  <p>Implement an Android countdown timer with pause and reset in a time-limited, document-based coding round.</p>
+  <details><summary>Source and scope</summary><p>The candidate chose XML and an Activity; those were not mandated architectural requirements. The worked lesson adds background completion and recovery as practice extensions.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/wseejt/comment/l4w9ah0/" aria-label="Source for Countdown timer with pause and reset">Source discussion</a></p></details>
+<p class="lesson-link"><a href="problems/countdown-timer/index.html">Related countdown walkthrough</a> <span class="source-note">Includes practice extensions; not an exact solution to every reported variant.</span></p>
+</article><article class="problem" id="android-timer-coding" aria-labelledby="android-timer-coding-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Coding exercise</div>
+  <h3 id="android-timer-coding-title">Android timer coding exercise</h3>
+  <p>Code an Android timer application. The report does not disclose further timer requirements.</p>
+  <details><summary>Source and scope</summary><p>The author says the system-design round was skipped. This is evidence of a platform coding task, not a system-design round.</p><p class="source-note"><a href="https://leetcode.com/discuss/post/1108997/london-amazon-facebook-goolge-3-offers/" aria-label="Source for Android timer coding exercise">Source discussion</a></p></details>
+
+</article><article class="problem" id="timer-architecture" aria-labelledby="timer-architecture-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> App design</div>
+  <h3 id="timer-architecture-title">Timer architecture and app closure</h3>
+  <p>Design a timer with a Compose UI, ViewModel, domain and data layers. Explain what happens when the user closes the app.</p>
+  <details><summary>Source and scope</summary><p>Saved wording is not independently verified as a Google interview report. The worked lesson states its own interpretation of app closure.</p><p class="source-note">No public source link available.</p></details>
+<p class="lesson-link"><a href="problems/countdown-timer/index.html">Related countdown walkthrough</a> <span class="source-note">Includes practice extensions; not an exact solution to every reported variant.</span></p>
+</article><article class="problem" id="stopwatch-animation" aria-labelledby="stopwatch-animation-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Component design</div>
+  <h3 id="stopwatch-animation-title">Stopwatch animation and notification</h3>
+  <p>Design a stopwatch, including a circular animation and a counter displayed in a notification.</p>
+  <details><summary>Source and scope</summary><p>The candidate identifies animation and notification display as difficult parts. A stopwatch walkthrough has not been written yet.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/wseejt/comment/ikxnh6s/" aria-label="Source for Stopwatch animation and notification">Source discussion</a></p></details>
+
+</article><article class="problem" id="stopwatch-no-libraries" aria-labelledby="stopwatch-no-libraries-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Component design</div>
+  <h3 id="stopwatch-no-libraries-title">Stopwatch without libraries</h3>
+  <p>Design a stopwatch under a reported restriction against using libraries or Android classes.</p>
+  <details><summary>Source and scope</summary><p>The author&#x27;s later description mentions Flow and ViewModel. The report does not resolve that tension; do not invent exemptions. Other follow-ups were not disclosed.</p><p class="source-note"><a href="https://medium.com/@prabhat.rai1707/google-android-interview-experience-bangalore-a325ede7d9b3" aria-label="Source for Stopwatch without libraries">Source discussion</a></p></details>
+
+</article><article class="problem" id="media-captions" aria-labelledby="media-captions-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Algorithm exercise</div>
+  <h3 id="media-captions-title">Video captions</h3>
+  <p>Given a video&#x27;s playback position and state, select the caption to display. Update captions correctly when playback seeks to another position.</p>
+  <details><summary>Source and scope</summary><p>Saved MediaPlayer exercise; Google attribution has not been independently verified.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="piano" aria-labelledby="piano-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Open-ended prompt</div>
+  <h3 id="piano-title">Piano app</h3>
+  <p>Design a piano app. No interaction, audio or latency requirements were saved.</p>
+  <details><summary>Source and scope</summary><p>Clarify the scope before choosing UI or audio APIs. Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article>
+</section><section class="stage family" id="search" aria-labelledby="search-title">
+  <div class="stage-label">03 / Study group</div>
+  <h2 id="search-title">Search and large lists</h2>
+  <p class="family-intro">Move from local state to asynchronous API results. Practice search and pagination before keyboard suggestions; the latter also introduces text processing.</p>
+  <article class="problem" id="item-search" aria-labelledby="item-search-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="item-search-title">Search app</h3>
+  <p>Design an API-backed search screen that displays matching items in a list and handles edge cases. Explain the classes and relevant code.</p>
+  <details><summary>Source and scope</summary><p>Debouncing and caching were candidate proposals, not confirmed interviewer requirements. Exact follow-ups were not disclosed.</p><p class="source-note"><a href="https://medium.com/@prabhat.rai1707/google-android-interview-experience-bangalore-a325ede7d9b3" aria-label="Source for Search app">Source discussion</a></p></details>
+
+</article><article class="problem" id="movie-list" aria-labelledby="movie-list-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="movie-list-title">Paginated movie list</h3>
+  <p>Design a RecyclerView screen backed by an API, with pagination, filters and search. Show the flow from ViewModel through a use case to a repository.</p>
+  <details><summary>Source and scope</summary><p>Cursor pagination was the candidate&#x27;s choice. Saved related variants ask for XML, adapter and ViewHolder code, and an endless carousel over a huge dataset; those variants are not independently verified requirements of the linked report.</p><p class="source-note"><a href="https://medium.com/@prabhat.rai1707/google-android-interview-experience-bangalore-a325ede7d9b3" aria-label="Source for Paginated movie list">Source discussion</a></p></details>
+
+</article><article class="problem" id="autocomplete-keyboard" aria-labelledby="autocomplete-keyboard-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Component design</div>
+  <h3 id="autocomplete-keyboard-title">Autocomplete keyboard</h3>
+  <p>Design an Android keyboard with autocomplete. No further constraints were disclosed.</p>
+  <details><summary>Source and scope</summary><p>This is a separate account from the swipe-typing report; do not count them as the same interview.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/wseejt/comment/ldqp7mh/" aria-label="Source for Autocomplete keyboard">Source discussion</a></p></details>
+
+</article><article class="problem" id="swipe-typing" aria-labelledby="swipe-typing-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Component design</div>
+  <h3 id="swipe-typing-title">Swipe-typing suggestions</h3>
+  <p>Design keyboard word suggestions for swipe typing.</p>
+  <details><summary>Source and scope</summary><p>The report does not disclose the prediction model, dictionary or latency constraints.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/wseejt/comment/ikytk60/" aria-label="Source for Swipe-typing suggestions">Source discussion</a></p></details>
+
+</article>
+</section><section class="stage family" id="libraries" aria-labelledby="libraries-title">
+  <div class="stage-label">04 / Study group</div>
+  <h2 id="libraries-title">Libraries and concurrency</h2>
+  <p class="family-intro">Work on API contracts, ownership and concurrent callers. The image loader and location library require their own clarification questions; do not assume the same execution model.</p>
+  <article class="problem" id="singleton" aria-labelledby="singleton-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Component design</div>
+  <h3 id="singleton-title">Thread-safe singleton</h3>
+  <p>Design a singleton class and discuss thread safety.</p>
+  <details><summary>Source and scope</summary><p>Thread-safety follow-ups were reported, but their exact wording was not disclosed.</p><p class="source-note"><a href="https://medium.com/@prabhat.rai1707/google-android-interview-experience-bangalore-a325ede7d9b3" aria-label="Source for Thread-safe singleton">Source discussion</a></p></details>
+
+</article><article class="problem" id="image-loader" aria-labelledby="image-loader-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Library design</div>
+  <h3 id="image-loader-title">Image-loading library</h3>
+  <p>Design an Android library that loads images from URLs.</p>
+  <details><summary>Source and scope</summary><p>The saved prompt gives no cache, cancellation or concurrency requirements. Clarify them during practice; Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="threading-system" aria-labelledby="threading-system-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Component design</div>
+  <h3 id="threading-system-title">Threading system</h3>
+  <p>Design a threading system.</p>
+  <details><summary>Source and scope</summary><p>The account gives no API, scheduling or execution requirements. Treat the sparse wording as a starting point for clarification, not a complete specification.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/wseejt/comment/ikytajr/" aria-label="Source for Threading system">Source discussion</a></p></details>
+
+</article><article class="problem" id="location-library" aria-labelledby="location-library-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Library design</div>
+  <h3 id="location-library-title">Location-reporting library</h3>
+  <p>Design a library that sends location from an Android app.</p>
+  <details><summary>Source and scope</summary><p>Frequency, destination and background behavior were not saved. Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article>
+</section><section class="stage family" id="device" aria-labelledby="device-title">
+  <div class="stage-label">05 / Study group</div>
+  <h2 id="device-title">Device data and background work</h2>
+  <p class="family-intro">Discuss which Android component receives data and how long work may run. Separate historical interview wording from current platform restrictions.</p>
+  <article class="problem" id="broadcast-receiver" aria-labelledby="broadcast-receiver-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Coding exercise</div>
+  <h3 id="broadcast-receiver-title">Receiving data with a BroadcastReceiver</h3>
+  <p>Implement an Android data-receiving scenario using a BroadcastReceiver in Kotlin.</p>
+  <details><summary>Source and scope</summary><p>The full scenario is unavailable. The candidate reports missing a long-running-work edge case. The post&#x27;s timing claim is not used as current Android guidance.</p><p class="source-note"><a href="https://medium.com/@prabhat.rai1707/google-london-interview-experience-b0f61cd09061" aria-label="Source for Receiving data with a BroadcastReceiver">Source discussion</a></p></details>
+
+</article><article class="problem" id="connectivity-service" aria-labelledby="connectivity-service-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Coding exercise</div>
+  <h3 id="connectivity-service-title">Periodic connectivity check</h3>
+  <p>Write an Android service that checks connectivity every fifteen minutes.</p>
+  <details><summary>Source and scope</summary><p>A historical reported prompt, not a recommendation to implement periodic background work with an unrestricted service today.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/wseejt/comment/il043rr/" aria-label="Source for Periodic connectivity check">Source discussion</a></p></details>
+
+</article><article class="problem" id="heart-rate" aria-labelledby="heart-rate-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> App design</div>
+  <h3 id="heart-rate-title">Heart-rate data from a watch</h3>
+  <p>Design an app that reads heart-rate data from a smartwatch. Explain data sharing between apps and the Android services you would use.</p>
+  <details><summary>Source and scope</summary><p>Saved practice prompt; Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article>
+</section><section class="stage family" id="sync" aria-labelledby="sync-title">
+  <div class="stage-label">06 / Study group</div>
+  <h2 id="sync-title">Offline data and synchronization</h2>
+  <p class="family-intro">Start with settings and a todo list, then compare collaborative and larger data models. Decide how changes are represented before choosing a conflict-resolution strategy.</p>
+  <article class="problem" id="settings-sync" aria-labelledby="settings-sync-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="settings-sync-title">Settings storage and sync</h3>
+  <p>Design settings storage and UI lookup by setting ID. Use one API to detect changed setting values and another to save values on the server.</p>
+  <details><summary>Source and scope</summary><p>Offline storage and MVVM were the candidate&#x27;s solution, not additional stated requirements.</p><p class="source-note"><a href="https://medium.com/@himv1998/google-interview-sde-2-android-438e60d6031d" aria-label="Source for Settings storage and sync">Source discussion</a></p></details>
+
+</article><article class="problem" id="todo-sync" aria-labelledby="todo-sync-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="todo-sync-title">Multi-device todo list</h3>
+  <p>Design creation, updates and synchronization for a todo list used on multiple devices. Discuss cancellation and conflicting updates.</p>
+  <details><summary>Source and scope</summary><p>Saved practice prompt; Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="event-planning" aria-labelledby="event-planning-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="event-planning-title">Collaborative event task list</h3>
+  <p>Design a mobile task list that a family can use together while planning an event.</p>
+  <details><summary>Source and scope</summary><p>Permissions, locations, categories and comments were the candidate&#x27;s suggested clarification areas, not confirmed requirements.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/1e0kjtu/comment/lcopbtw/" aria-label="Source for Collaborative event task list">Source discussion</a></p></details>
+
+</article><article class="problem" id="gmail-sync" aria-labelledby="gmail-sync-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="gmail-sync-title">Email synchronization</h3>
+  <p>Design a Gmail-like Android app, focusing on synchronization between the client and server.</p>
+  <details><summary>Source and scope</summary><p>Saved practice prompt; Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="spreadsheet" aria-labelledby="spreadsheet-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="spreadsheet-title">Mobile spreadsheet</h3>
+  <p>Design a mobile spreadsheet app within a short design round.</p>
+  <details><summary>Source and scope</summary><p>The saved note mentions a half-hour design discussion and a separate Android-basics segment. It does not specify collaboration or formula requirements. Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="document-editing" aria-labelledby="document-editing-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Prompt missing</div>
+  <h3 id="document-editing-title">Collaborative document editing</h3>
+  <p>Only the problem title was saved. Editing behavior, offline requirements and conflict rules are missing.</p>
+  <details><summary>Source and scope</summary><p>Confirm the prompt before treating it as a particular Google Docs interview question.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="database-sync-discussion" aria-labelledby="database-sync-discussion-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Project discussion</div>
+  <h3 id="database-sync-discussion-title">MySQL and SQLite synchronization project</h3>
+  <p>Discuss a candidate&#x27;s existing project for bidirectional synchronization between MySQL and SQLite.</p>
+  <details><summary>Source and scope</summary><p>This was a resume/project discussion, not evidence that the interviewer assigned a new offline-sync design.</p><p class="source-note"><a href="https://www.geeksforgeeks.org/interview-experiences/google-interview-experience/" aria-label="Source for MySQL and SQLite synchronization project">Source discussion</a></p></details>
+
+</article>
+</section><section class="stage family" id="live" aria-labelledby="live-title">
+  <div class="stage-label">07 / Study group</div>
+  <h2 id="live-title">Shared state and live connections</h2>
+  <p class="family-intro">Add multiple users, delayed acknowledgments and reconnects. Decide whether the screen is showing a requested change or confirmed remote state.</p>
+  <article class="problem" id="neon-logo" aria-labelledby="neon-logo-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="neon-logo-title">Shared neon-logo controller</h3>
+  <p>Design a mobile app for changing the color of each letter in an office GOOGLE sign. Multiple people can control it; handle concurrent changes, differences between displayed and actual state, and network failures.</p>
+  <details><summary>Source and scope</summary><p>The linked candidate account reports these constraints.</p><p class="source-note"><a href="https://leetcode.com/discuss/post/5597647/Google-or-L5-Android-or-Offer/" aria-label="Source for Shared neon-logo controller">Source discussion</a></p></details>
+
+</article><article class="problem" id="sockets" aria-labelledby="sockets-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Open-ended prompt</div>
+  <h3 id="sockets-title">Socket-connected app</h3>
+  <p>Design an app involving sockets and discuss background-work choices.</p>
+  <details><summary>Source and scope</summary><p>The saved account mentions WorkManager but gives no product or protocol requirements. Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article><article class="problem" id="ride-sharing" aria-labelledby="ride-sharing-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Prompt missing</div>
+  <h3 id="ride-sharing-title">Ride-sharing app</h3>
+  <p>Only the problem title was saved. Client/backend scope and ride requirements are missing.</p>
+  <details><summary>Source and scope</summary><p>Do not replace the missing prompt with a generic backend Uber design without agreeing on the scope.</p><p class="source-note">No public source link available.</p></details>
+
+</article>
+</section><section class="stage family" id="media" aria-labelledby="media-title">
+  <div class="stage-label">08 / Study group</div>
+  <h2 id="media-title">Full app design</h2>
+  <p class="family-intro">Combine networking, storage and media handling in an app-level architecture. Keep client design distinct from a full backend infrastructure exercise.</p>
+  <article class="problem" id="video-sharing" aria-labelledby="video-sharing-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Client design</div>
+  <h3 id="video-sharing-title">Video-sharing app</h3>
+  <p>Describe a mobile video-sharing app&#x27;s architecture, including REST calls and blob storage at a basic backend level.</p>
+  <details><summary>Source and scope</summary><p>The commenter confirms mobile but not Android versus iOS or level. Detailed backend internals were not part of the reported scope.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/1e0kjtu/comment/lcolzk8/" aria-label="Source for Video-sharing app">Source discussion</a></p></details>
+
+</article>
+</section><section class="stage family" id="review" aria-labelledby="review-title">
+  <div class="stage-label">09 / Study group</div>
+  <h2 id="review-title">Design review and debugging</h2>
+  <p class="family-intro">Apply the earlier topics to existing systems. Form hypotheses, choose useful measurements and explain how you would verify an improvement.</p>
+  <article class="problem" id="chat-critique" aria-labelledby="chat-critique-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Design critique</div>
+  <h3 id="chat-critique-title">Chat-app design review</h3>
+  <p>Review an existing Android chat project and improve its design without RxJava or Retrofit.</p>
+  <details><summary>Source and scope</summary><p>MVVM was proposed by the candidate, not required. The interviewer pushed beyond the initial Google-library suggestion.</p><p class="source-note"><a href="https://leetcode.com/discuss/post/418626/" aria-label="Source for Chat-app design review">Source discussion</a></p></details>
+
+</article><article class="problem" id="intermittent-failure" aria-labelledby="intermittent-failure-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Debugging design</div>
+  <h3 id="intermittent-failure-title">Intermittent update failure</h3>
+  <p>Investigate an information-updating app that stops working at particular times for some users. Discuss possible causes and the instrumentation needed to distinguish them.</p>
+  <details><summary>Source and scope</summary><p>The report establishes neither a root cause nor a preferred analytics product.</p><p class="source-note"><a href="https://www.reddit.com/r/androiddev/comments/1e0kjtu/comment/lcolzk8/" aria-label="Source for Intermittent update failure">Source discussion</a></p></details>
+
+</article><article class="problem" id="scroll-performance" aria-labelledby="scroll-performance-title">
+  <div class="problem-meta">Interview report <span aria-hidden="true">/</span> Domain discussion</div>
+  <h3 id="scroll-performance-title">Scrolling performance and background work</h3>
+  <p>Discuss scrolling optimization, background operations and testing.</p>
+  <details><summary>Source and scope</summary><p>Specific scenarios and follow-ups were not disclosed; this is not a reconstructed app-design exercise.</p><p class="source-note"><a href="https://leetcode.com/discuss/post/1110505/facebook-google-london-offers/" aria-label="Source for Scrolling performance and background work">Source discussion</a></p></details>
+
+</article><article class="problem" id="debugging-topics" aria-labelledby="debugging-topics-title">
+  <div class="problem-meta">Practice notes <span aria-hidden="true">/</span> Topic checklist</div>
+  <h3 id="debugging-topics-title">Android debugging topics</h3>
+  <p>Review ANRs, logs, UI jank, intermittent failures and performance investigations for browser, notes and document-viewer screens.</p>
+  <details><summary>Source and scope</summary><p>A saved topic index, not full interview prompts. Google attribution is unverified.</p><p class="source-note">No public source link available.</p></details>
+
+</article>
+</section>
+    <section class="stage" id="about" aria-labelledby="about-title">
+      <h2 id="about-title">About the questions</h2>
+      <p><strong>Interview report</strong> means a candidate publicly described a Google interview. It is self-reported evidence, not an official question bank or a prediction of what you will be asked. Several entries can come from the same interview account.</p>
+      <p><strong>Practice notes</strong> are saved exercises or topics whose Google attribution has not been independently verified. Entries marked <strong>Prompt missing</strong> retain only a title and need clarification. No worked solution is implied by listing a question.</p>
+      <p>Question summaries are paraphrased. Source notes distinguish reported constraints from candidate choices and added practice variants. Private note links are not included. External discussions can move, require sign-in or become unavailable.</p>
+      <h3>How the material is organized</h3>
+      <p>Worked problems introduce requirements before architecture, then cover implementation decisions and tests. The concept reference holds shared explanations and links back to their uses. This structure was informed by <a href="https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery">Hello Interview</a>, <a href="https://bytebytego.com/courses/system-design-interview/a-framework-for-system-design-interviews">ByteByteGo</a> and <a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a>; their prose and diagrams are not reproduced here.</p>
+      <p class="source-note">Published scope: the mobile questions and supporting topics in the supplied preparation list. Backend-only and scope-unclear entries from the broader research collection are excluded. Reviewed 28 October 2026. Independent study notes; not affiliated with Google or the referenced publishers.</p>
+    </section>
+    <footer class="footer-nav"><a href="index.html#main">Back to top</a><a href="questions.csv" download>Download question list (CSV)</a><a href="https://github.com/atulac/android-system-design">Source on GitHub</a></footer>
+  </main>
+</div>
+</body>
+</html>

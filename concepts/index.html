@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Short Android system-design concepts, with links to the worked problems and nuances where each is used.">
+  <title>Concepts | Android System Design</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<a class="skip" href="index.html#main">Skip to concepts</a>
+<header class="site-head">
+  <a class="brand" href="../index.html">Android System Design</a>
+  <nav aria-label="Main navigation"><a href="../index.html">Problems</a><a href="../problems/countdown-timer/index.html">Countdown timer</a><a href="./index.html" aria-current="page">Concepts</a></nav>
+</header>
+<div class="layout">
+  <aside class="rail" aria-label="Concept navigation">
+    <details class="contents"><summary>Concept index</summary>
+    <p class="rail-title">Time and state</p>
+    <nav aria-label="Wiki terms">
+      <ol>
+        <li><a href="index.html#state-machine">State machine</a></li>
+        <li><a href="index.html#clocks">Android clocks</a></li>
+        <li><a href="index.html#coroutine-delay">Coroutine delay</a></li>
+      </ol>
+      <p class="rail-title">Delivery and recovery</p>
+      <ol>
+        <li><a href="index.html#alarm-manager">AlarmManager</a></li>
+        <li><a href="index.html#pending-intent">PendingIntent</a></li>
+        <li><a href="index.html#broadcast-receiver">BroadcastReceiver</a></li>
+        <li><a href="index.html#persistence">Durable state</a></li>
+        <li><a href="index.html#background-work">Foreground service / WorkManager</a></li>
+        <li><a href="index.html#notifications">Notifications</a></li>
+        <li><a href="index.html#app-lifetime">App lifetime</a></li>
+        <li><a href="index.html#power">Sleep, Doze and power off</a></li>
+      </ol>
+      <div class="rail-extra"><a href="../problems/countdown-timer/index.html">Countdown timer</a><a href="index.html#wiki-sources">References</a></div>
+    </nav>
+    </details>
+  </aside>
+  <main id="main">
+    <div class="eyebrow">Reference</div>
+    <h1>Android concepts</h1>
+    <p class="lead">Definitions, platform limitations and examples from the worked problems.</p>
+    <p>Each entry links back to the section that uses it. The current entries cover the <a href="../problems/countdown-timer/index.html">countdown timer</a>; other topics will be added as their walkthroughs are written.</p>
+
+    <article class="concept" id="state-machine" aria-labelledby="state-machine-title">
+      <div class="stage-label">01 / Model behaviour</div>
+      <h2 id="state-machine-title">State machine</h2>
+      <p>A set of states and rules for moving between them. It tells you what an event means <em>given the state you are in</em>.</p>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#state">Idle / Running / Paused / Finished</a>. Pause saves a duration; Resume creates a new running deadline. A duplicate Start must not create parallel timers.</p></div>
+      <details><summary>Why not a handful of booleans?</summary><p>Separate flags such as <code>isRunning</code>, <code>isPaused</code> and <code>isFinished</code> can describe contradictory combinations. An explicit state lets you reject illegal events and test a small transition table. This is a modelling choice, not a requirement to use a particular library.</p></details>
+      <p class="concept-links"><a href="index.html#persistence">Related: durable state</a><a href="../problems/countdown-timer/index.html#race">Applied nuance: stale events</a></p>
+    </article>
+
+    <article class="concept" id="clocks" aria-labelledby="clocks-title">
+      <div class="stage-label">02 / Measure time</div>
+      <h2 id="clocks-title">Android clocks</h2>
+      <p><strong>Elapsed</strong> means &ldquo;time that has passed.&rdquo; <strong>Monotonic</strong> means the clock does not jump backwards. Neither word means the value survives reboot.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th scope="col">Clock</th><th scope="col">Answers</th><th scope="col">Trap</th></tr></thead>
+        <tbody>
+          <tr><td><code>currentTimeMillis()</code></td><td>Wall date/time since the Unix epoch.</td><td>Can jump with clock correction or manual changes.</td></tr>
+          <tr><td><code>uptimeMillis()</code></td><td>Time since boot, excluding deep sleep.</td><td>Sleep would not count toward your duration.</td></tr>
+          <tr><td><code>elapsedRealtime()</code></td><td>Time since boot, including deep sleep.</td><td>Resets on reboot.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#time">Measure the running interval</a> with elapsed time. <a href="../problems/countdown-timer/index.html#reboot-policy">Reboot recovery</a> uses an explicitly less trustworthy wall-time fallback. A timezone display change alone does not alter an epoch-millisecond deadline.</p></div>
+      <details id="os-time"><summary>How does the OS know time if my app is not counting?</summary><p>Your app reads operating-system clocks rather than generating time by running a loop. The OS uses clock and timing facilities below your process. The useful Android contract is the table above: choose the clock by its behaviour, not by whether your coroutine happens to be executing. The underlying implementation is device/platform-specific.</p></details>
+      <p class="source-note">Source: <a href="https://developer.android.com/reference/android/os/SystemClock">SystemClock API</a>. The reboot strategy is our design choice, not a built-in guarantee.</p>
+    </article>
+
+    <article class="concept" id="coroutine-delay" aria-labelledby="delay-title">
+      <div class="stage-label">03 / Schedule work within a process</div>
+      <h2 id="delay-title">Coroutine delay</h2>
+      <p><code>delay()</code> suspends a coroutine without holding a thread. On normal completion, at least the requested time has passed; cancellation can prevent its continuation from running.</p>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#time">Pace visible redraws</a>. late or missing redraws must not change the derived remaining time. Delay is not the completion scheduler after process death.</p></div>
+      <details><summary>What is happening internally?</summary><p>At a useful high level, the coroutine's continuation is retained and a future resumption is arranged. It can resume only when its dispatcher can execute it. The exact timing mechanism is dispatcher-specific; a Main dispatcher and a general worker dispatcher need not implement it identically.</p><p>The coroutine is not secretly running in another process. If its app process dies, its in-memory continuation is gone.</p></details>
+      <p class="source-note">Source: <a href="https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines/delay.html">Kotlin delay API</a>. For process lifetime, see <a href="index.html#app-lifetime">the app-lifetime entry</a>.</p>
+    </article>
+
+    <article class="concept" id="alarm-manager" aria-labelledby="alarm-title">
+      <div class="stage-label">04 / Arrange a future event</div>
+      <h2 id="alarm-title">AlarmManager</h2>
+      <p>An Android system service for time-based event delivery outside your app's lifetime. It is a scheduler, not persistent storage for your entire timer model.</p>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#completion">Arrange completion</a> at the run's deadline. elapsed-time alarm types match our running clock; wakeup and idle-delivery behaviour are separate choices.</p></div>
+      <details><summary>Where does the alarm live when my process dies?</summary><p>Android's system alarm infrastructure owns the registration. &ldquo;Outside your app process&rdquo; does not mean &ldquo;without any process.&rdquo; A PendingIntent-based registration can outlive ordinary app process death; a callback tied to a live app object is not interchangeable.</p></details>
+      <details><summary>Exact versus inexact, and what can still go wrong?</summary><p><code>setExact()</code> alone is not idle-mode delivery. <code>setExactAndAllowWhileIdle()</code> supports idle delivery, but capability checks and rate restrictions apply. Choose only for a justified user-facing need. Force-stop, power-off and lost registrations after reboot still bound the promise.</p><p>On applicable API/target combinations, check <code>canScheduleExactAlarms()</code>. Do not assume <code>SCHEDULE_EXACT_ALARM</code> is pre-granted. <code>USE_EXACT_ALARM</code> has restricted eligibility and policy requirements; it is not a general permission shortcut.</p></details>
+      <p class="source-note">Sources: <a href="https://developer.android.com/reference/android/app/AlarmManager">AlarmManager API</a>, <a href="https://developer.android.com/develop/background-work/services/alarms">scheduling and exact-alarm access</a>, <a href="https://developer.android.com/training/monitoring-device-state/doze-standby">Doze restrictions</a>.</p>
+      <p class="concept-links"><a href="index.html#pending-intent">PendingIntent</a><a href="index.html#broadcast-receiver">BroadcastReceiver</a><a href="index.html#power">Doze</a></p>
+    </article>
+
+    <article class="concept" id="pending-intent" aria-labelledby="pending-title">
+      <div class="stage-label">05 / Delegate an action</div>
+      <h2 id="pending-title">PendingIntent</h2>
+      <p>A system-held token describing an action another process can perform later on your app's behalf. It is neither the timer nor the code that handles completion.</p>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#completion">Connect the alarm to an explicit receiver</a>. identify the specific run so a late event cannot finish a newer timer.</p></div>
+      <details><summary>How do I avoid replacing or cancelling the wrong alarm?</summary><p>PendingIntent matching depends on operation type, request code and matching Intent fields; extras alone do not make a new identity. One approach is an explicit receiver and a URI containing timer ID and revision. Save enough information to recreate that identity for cancellation.</p><p>Prefer immutable tokens when mutation is unnecessary. The receiver must still validate the saved run; a unique token is not a substitute for checking current state.</p></details>
+      <p class="source-note">Source: <a href="https://developer.android.com/reference/android/app/PendingIntent">PendingIntent API</a>. URI/run-version design is a proposed approach.</p>
+      <p class="concept-links"><a href="../problems/countdown-timer/index.html#race">Example: Pause races with completion</a><a href="index.html#alarm-manager">Related: AlarmManager</a></p>
+    </article>
+
+    <article class="concept" id="broadcast-receiver" aria-labelledby="receiver-title">
+      <div class="stage-label">06 / Enter an app to handle an event</div>
+      <h2 id="receiver-title">BroadcastReceiver</h2>
+      <p>An Android component that handles a delivered broadcast. A manifest entry describes an eligible entry point; it is not an object waiting forever in memory.</p>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#completion">Handle completion</a> and <a href="../problems/countdown-timer/index.html#q-reboot">restore after boot</a>. completion validates a run; boot reconstructs scheduling from durable state.</p></div>
+      <details><summary>What work is safe inside a receiver?</summary><p>Keep it short. If finishing bounded asynchronous I/O with <code>goAsync()</code>, complete its pending result within the receiver's time budget. Do not start an unowned coroutine, return from <code>onReceive()</code> and assume the process must stay alive. Long work needs an appropriate background mechanism.</p></details>
+      <details><summary>What about alarms before the first unlock after reboot?</summary><p>Credential-protected storage is unavailable before the first unlock. Supporting that period needs Direct Boot-aware components, device-protected storage for the necessary state and the appropriate boot event. The worked problem defaults to recovery after normal boot/unlock; before-unlock alerts are an additional requirement.</p></details>
+      <p class="source-note">Sources: <a href="https://developer.android.com/develop/background-work/background-tasks/broadcasts">Broadcasts overview</a>, <a href="https://developer.android.com/privacy-and-security/direct-boot">Direct Boot</a>.</p>
+    </article>
+
+    <article class="concept" id="persistence" aria-labelledby="persistence-title">
+      <div class="stage-label">07 / Keep accepted state</div>
+      <h2 id="persistence-title">Durable state and reconciliation</h2>
+      <p>Durable state outlives application memory. <strong>Reconciliation</strong> means reading that accepted state and repairing its external representation, such as a missing alarm.</p>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#record">Persist transitions and deadlines</a>; <a href="../problems/countdown-timer/index.html#commit-gap">reconcile scheduling</a>. writing a record and registering an OS alarm are not one atomic commit.</p></div>
+      <details><summary>DataStore, Room, ViewModel or saved UI state?</summary><p>A ViewModel holds UI-related state in memory; it is not the durable store. A small, coherent DataStore snapshot can fit one timer. Room is useful when queries, multiple records or transactions are needed. Saved UI state can help reconstruct a screen but is not the authority for background delivery.</p><p>Choose the minimum storage contract that preserves a complete transition. Do not add a database just to save a ticking number.</p></details>
+      <details><summary>How can I identify a boot?</summary><p>On API 24+, <code>Settings.Global.BOOT_COUNT</code> is a possible boot identifier to persist with the record. Handle inability to read a valid value. If boot identity is unknown, apply the chosen fallback policy rather than trusting a numeric comparison between elapsed timestamps.</p></details>
+      <p class="source-note">Sources: <a href="https://developer.android.com/topic/libraries/architecture/datastore">DataStore</a>, <a href="https://developer.android.com/training/data-storage/room">Room</a>, <a href="https://developer.android.com/topic/libraries/architecture/viewmodel">ViewModel</a>, <a href="https://developer.android.com/reference/android/provider/Settings.Global#BOOT_COUNT">BOOT_COUNT</a>. Reconciliation is the proposed design, not an automatic guarantee from these APIs.</p>
+    </article>
+
+    <article class="concept" id="background-work" aria-labelledby="background-title">
+      <div class="stage-label">08 / Match execution to the need</div>
+      <h2 id="background-title">Foreground service and WorkManager</h2>
+      <p>A <strong>foreground service</strong> supports eligible ongoing, user-noticeable work. <strong>WorkManager</strong> schedules durable work whose execution may be deferred. Neither is the duration clock.</p>
+      <div class="used-in"><span class="used-label">Considered in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#completion">Choose the right background tool</a>. neither is needed merely to wait for zero. Optional audio playback after completion would introduce a different execution requirement.</p></div>
+      <details><summary>Why not keep a foreground service alive for every timer?</summary><p>A service does not make callback counting accurate. It adds user-visible and platform obligations. Background-start restrictions, declared service types and type-specific permissions can apply. Use one only for justified work with an eligible type, not as a generic survival mechanism.</p></details>
+      <details><summary>Why is WorkManager not an exact timer?</summary><p>Its execution depends on scheduling and constraints, not just the requested time. Periodic work has a minimum repeat interval of 15 minutes; one-time work also does not promise exact delivery at its initial delay. It may fit later analytics or cleanup, not this timer's precision contract.</p></details>
+      <p class="source-note">Sources: <a href="https://developer.android.com/develop/background-work/services/fgs/changes">Foreground-service restrictions by platform/target level</a>, <a href="https://developer.android.com/develop/background-work/background-tasks/persistent/getting-started/define-work">WorkManager requests and timing</a>.</p>
+    </article>
+
+    <article class="concept" id="notifications" aria-labelledby="notifications-title">
+      <div class="stage-label">09 / Present state outside the screen</div>
+      <h2 id="notifications-title">Notification chronometer and permissions</h2>
+      <p>A notification is system-managed presentation. A chronometer can update a time display without per-second posts from your app. It does not replace expiry handling.</p>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#q-notification">Show the remaining time outside the Activity</a>. Pause freezes the display; finish replaces it. The durable run remains authoritative.</p></div>
+      <details><summary>What is the countdown setup?</summary>
+        <pre><code>// Platform API sketch: countdown support requires API 24+.
+// Channel creation and notification permission are separate.
+builder
+    .setWhen(System.currentTimeMillis() + remainingMs)
+    .setUsesChronometer(true)
+    .setChronometerCountDown(true)</code></pre>
+        <p>Here <code>setWhen</code> uses wall time, not an elapsed timestamp. Rebuild the display from current state after recovery or relevant time/state changes. OS presentation is not your completion event.</p>
+      </details>
+      <details id="fgs-permission"><summary>Does a foreground service need notification permission?</summary><p>On Android 13+, launching a foreground service does not itself require <code>POST_NOTIFICATIONS</code>, but the service must still provide its notification. With permission denied, its notice appears in Task Manager rather than the notification drawer. Ordinary completion notifications generally do need permission. Starting the service has separate eligibility and permission checks.</p></details>
+      <p class="source-note">Sources: <a href="https://developer.android.com/reference/android/app/Notification.Builder#setChronometerCountDown(boolean)">Notification.Builder chronometer</a>, <a href="https://developer.android.com/develop/ui/compose/notifications/notification-permission">Notification runtime permission</a>.</p>
+    </article>
+
+    <article class="concept" id="app-lifetime" aria-labelledby="lifetime-title">
+      <div class="stage-label">10 / Name the interruption precisely</div>
+      <h2 id="lifetime-title">Activity, process and package lifetime</h2>
+      <p>A screen, an app process and an installed package have different lifetimes. &ldquo;The app was killed&rdquo; is not enough information to choose recovery behaviour.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th scope="col">Event</th><th scope="col">What not to assume</th></tr></thead>
+        <tbody>
+          <tr><td>Screen leaves / Activity recreated</td><td>The timer should not restart with the screen.</td></tr>
+          <tr><td>Process reclaimed for memory</td><td>No in-process coroutine or ViewModel survives.</td></tr>
+          <tr><td>Task swiped away</td><td>It is not the platform's Force Stop action; device behaviour can vary.</td></tr>
+          <tr><td>Force Stop</td><td>No self-restart guarantee; package stopped state must be respected.</td></tr>
+          <tr><td>Reboot</td><td>Do not reuse old elapsed timestamps or assume alarm registrations remain.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#recovery">Choose the recovery path</a>. ordinary process death can preserve an OS-held scheduled action; force-stop is an intentional boundary, not a reliability bug to bypass.</p></div>
+      <p class="source-note">Sources: <a href="https://developer.android.com/guide/components/activities/process-lifecycle">Process lifecycle</a>, <a href="https://developer.android.com/about/versions/15/behavior-changes-all#enhanced-stop-states">Android 15 stopped state</a>. On Android 15, entering stopped state also cancels pending intents.</p>
+    </article>
+
+    <article class="concept" id="power" aria-labelledby="power-title">
+      <div class="stage-label">11 / Separate elapsed time from execution</div>
+      <h2 id="power-title">Deep sleep, Doze and powered off</h2>
+      <p><strong>Deep sleep</strong> is a low-power condition in which application code may not execute. <strong>Doze</strong> is an Android policy restricting background work during device inactivity. <strong>Powered off</strong> means the normal Android OS is not running.</p>
+      <div class="used-in"><span class="used-label">Used in: countdown timer</span><p><a href="../problems/countdown-timer/index.html#time">Count sleeping time</a> with the right clock; <a href="../problems/countdown-timer/index.html#completion">choose idle-aware delivery</a> if justified. a clock progressing is not proof an app callback is executing.</p></div>
+      <details><summary>Does exact mean unaffected by Doze?</summary><p>Not by itself. Standard alarms can be deferred in Doze, including <code>setExact()</code>. Idle-aware APIs have a different contract and frequency restrictions. They are for selected events, not a way to run a one-second background ticker.</p></details>
+      <details><summary>Can an ordinary app power on the phone for an alarm?</summary><p>Do not assume it can. A device manufacturer's powered-off alarm feature is not the generic AlarmManager contract. For this problem, explain what recovery should show after boot instead of promising execution while the OS is off.</p></details>
+      <p class="source-note">Sources: <a href="https://developer.android.com/training/monitoring-device-state/doze-standby">Doze and App Standby</a>, <a href="https://developer.android.com/reference/android/os/SystemClock">SystemClock</a>, <a href="https://developer.android.com/develop/background-work/services/alarms">Alarm scheduling and reboot</a>.</p>
+    </article>
+
+    <section class="stage" id="wiki-sources" aria-labelledby="wiki-sources-title">
+      <div class="stage-label">References</div>
+      <h2 id="wiki-sources-title">Sources and updates</h2>
+      <p>Documentation links appear beside the relevant explanation. Problem-specific decisions are described in the linked walkthrough, rather than treated as rules for every Android app.</p>
+      <p class="source-note">Platform links sit beside their claims. Reviewed 28 October 2026. The countdown is the only worked problem currently linked; potential reuse in other questions is not presented as completed preparation. Design proposals and pseudocode are not executable app guarantees.</p>
+      <p class="source-note">Source register for the overall lesson: <a href="../problems/countdown-timer/index.html#sources">Android/Kotlin documentation and interview-prompt provenance</a>.</p>
+    </section>
+    <footer class="footer-nav"><a href="../problems/countdown-timer/index.html">Return to the countdown lesson</a><a href="../problems/countdown-timer/index.html#revision">Quick revision</a></footer>
+  </main>
+</div>
+</body>
+</html>

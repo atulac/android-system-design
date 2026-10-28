@@ -1,0 +1,209 @@
+[
+  {
+    "id": "android-basics", "name": "Android basics", "family": "foundations", "kind": "Topic checklist", "evidence": "Practice notes",
+    "question": "Review Context and resources; Activity and ViewModel lifecycles; Kotlin versus Java; coroutines, structured concurrency, Flow, StateFlow and LiveData; Handler/Looper and threading; dependency injection; MVVM, MVI, MVP, Redux and Clean Architecture; networking; Room, DataStore and SharedPreferences; WorkManager, foreground services, executors and alarms; RecyclerView and Compose; memory leaks, profiling and application security.",
+    "note": "A collected revision checklist, not one interview question. The linked discussion is a related Android question list, not verification that Google asked every topic.",
+    "source": "https://leetcode.com/discuss/post/4802219/android-interview-questions-by-vansh_sha-t8mw/"
+  },
+  {
+    "id": "view-hierarchy", "name": "View hierarchy traversal", "family": "foundations", "kind": "Algorithm exercise", "evidence": "Practice notes",
+    "question": "Describe how to visit and print every View in an Android view hierarchy.",
+    "note": "Saved exercise; Google attribution has not been independently verified.", "source": null
+  },
+  {
+    "id": "single-activity", "name": "Multiple Activities to a single Activity", "family": "foundations", "kind": "Prompt missing", "evidence": "Practice notes",
+    "question": "Only this topic title was saved. The original migration scenario and constraints are missing.",
+    "note": "Agree on a practice scenario before attempting a design; do not infer an interview prompt from the title.", "source": null
+  },
+  {
+    "id": "ui-perception", "name": "Perceived UI performance", "family": "foundations", "kind": "Supporting topic", "evidence": "Practice notes",
+    "question": "Discuss perceived responsiveness as a UI design concern.",
+    "note": "A supporting note, not a reported interview question.", "source": null
+  },
+  {
+    "id": "countdown-pause-reset", "name": "Countdown timer with pause and reset", "family": "timers", "kind": "Coding exercise", "evidence": "Interview report",
+    "question": "Implement an Android countdown timer with pause and reset in a time-limited, document-based coding round.",
+    "note": "The candidate chose XML and an Activity; those were not mandated architectural requirements. The worked lesson adds background completion and recovery as practice extensions.",
+    "source": "https://www.reddit.com/r/androiddev/comments/wseejt/comment/l4w9ah0/", "lesson": "problems/countdown-timer/"
+  },
+  {
+    "id": "android-timer-coding", "name": "Android timer coding exercise", "family": "timers", "kind": "Coding exercise", "evidence": "Interview report",
+    "question": "Code an Android timer application. The report does not disclose further timer requirements.",
+    "note": "The author says the system-design round was skipped. This is evidence of a platform coding task, not a system-design round.",
+    "source": "https://leetcode.com/discuss/post/1108997/london-amazon-facebook-goolge-3-offers/"
+  },
+  {
+    "id": "timer-architecture", "name": "Timer architecture and app closure", "family": "timers", "kind": "App design", "evidence": "Practice notes",
+    "question": "Design a timer with a Compose UI, ViewModel, domain and data layers. Explain what happens when the user closes the app.",
+    "note": "Saved wording is not independently verified as a Google interview report. The worked lesson states its own interpretation of app closure.",
+    "source": null, "lesson": "problems/countdown-timer/"
+  },
+  {
+    "id": "stopwatch-animation", "name": "Stopwatch animation and notification", "family": "timers", "kind": "Component design", "evidence": "Interview report",
+    "question": "Design a stopwatch, including a circular animation and a counter displayed in a notification.",
+    "note": "The candidate identifies animation and notification display as difficult parts. A stopwatch walkthrough has not been written yet.",
+    "source": "https://www.reddit.com/r/androiddev/comments/wseejt/comment/ikxnh6s/"
+  },
+  {
+    "id": "stopwatch-no-libraries", "name": "Stopwatch without libraries", "family": "timers", "kind": "Component design", "evidence": "Interview report",
+    "question": "Design a stopwatch under a reported restriction against using libraries or Android classes.",
+    "note": "The author's later description mentions Flow and ViewModel. The report does not resolve that tension; do not invent exemptions. Other follow-ups were not disclosed.",
+    "source": "https://medium.com/@prabhat.rai1707/google-android-interview-experience-bangalore-a325ede7d9b3"
+  },
+  {
+    "id": "media-captions", "name": "Video captions", "family": "timers", "kind": "Algorithm exercise", "evidence": "Practice notes",
+    "question": "Given a video's playback position and state, select the caption to display. Update captions correctly when playback seeks to another position.",
+    "note": "Saved MediaPlayer exercise; Google attribution has not been independently verified.", "source": null
+  },
+  {
+    "id": "piano", "name": "Piano app", "family": "timers", "kind": "Open-ended prompt", "evidence": "Practice notes",
+    "question": "Design a piano app. No interaction, audio or latency requirements were saved.",
+    "note": "Clarify the scope before choosing UI or audio APIs. Google attribution is unverified.", "source": null
+  },
+  {
+    "id": "item-search", "name": "Search app", "family": "search", "kind": "Client design", "evidence": "Interview report",
+    "question": "Design an API-backed search screen that displays matching items in a list and handles edge cases. Explain the classes and relevant code.",
+    "note": "Debouncing and caching were candidate proposals, not confirmed interviewer requirements. Exact follow-ups were not disclosed.",
+    "source": "https://medium.com/@prabhat.rai1707/google-android-interview-experience-bangalore-a325ede7d9b3"
+  },
+  {
+    "id": "movie-list", "name": "Paginated movie list", "family": "search", "kind": "Client design", "evidence": "Interview report",
+    "question": "Design a RecyclerView screen backed by an API, with pagination, filters and search. Show the flow from ViewModel through a use case to a repository.",
+    "note": "Cursor pagination was the candidate's choice. Saved related variants ask for XML, adapter and ViewHolder code, and an endless carousel over a huge dataset; those variants are not independently verified requirements of the linked report.",
+    "source": "https://medium.com/@prabhat.rai1707/google-android-interview-experience-bangalore-a325ede7d9b3"
+  },
+  {
+    "id": "autocomplete-keyboard", "name": "Autocomplete keyboard", "family": "search", "kind": "Component design", "evidence": "Interview report",
+    "question": "Design an Android keyboard with autocomplete. No further constraints were disclosed.",
+    "note": "This is a separate account from the swipe-typing report; do not count them as the same interview.",
+    "source": "https://www.reddit.com/r/androiddev/comments/wseejt/comment/ldqp7mh/"
+  },
+  {
+    "id": "swipe-typing", "name": "Swipe-typing suggestions", "family": "search", "kind": "Component design", "evidence": "Interview report",
+    "question": "Design keyboard word suggestions for swipe typing.",
+    "note": "The report does not disclose the prediction model, dictionary or latency constraints.",
+    "source": "https://www.reddit.com/r/androiddev/comments/wseejt/comment/ikytk60/"
+  },
+  {
+    "id": "singleton", "name": "Thread-safe singleton", "family": "libraries", "kind": "Component design", "evidence": "Interview report",
+    "question": "Design a singleton class and discuss thread safety.",
+    "note": "Thread-safety follow-ups were reported, but their exact wording was not disclosed.",
+    "source": "https://medium.com/@prabhat.rai1707/google-android-interview-experience-bangalore-a325ede7d9b3"
+  },
+  {
+    "id": "image-loader", "name": "Image-loading library", "family": "libraries", "kind": "Library design", "evidence": "Practice notes",
+    "question": "Design an Android library that loads images from URLs.",
+    "note": "The saved prompt gives no cache, cancellation or concurrency requirements. Clarify them during practice; Google attribution is unverified.", "source": null
+  },
+  {
+    "id": "threading-system", "name": "Threading system", "family": "libraries", "kind": "Component design", "evidence": "Interview report",
+    "question": "Design a threading system.",
+    "note": "The account gives no API, scheduling or execution requirements. Treat the sparse wording as a starting point for clarification, not a complete specification.",
+    "source": "https://www.reddit.com/r/androiddev/comments/wseejt/comment/ikytajr/"
+  },
+  {
+    "id": "location-library", "name": "Location-reporting library", "family": "libraries", "kind": "Library design", "evidence": "Practice notes",
+    "question": "Design a library that sends location from an Android app.",
+    "note": "Frequency, destination and background behavior were not saved. Google attribution is unverified.", "source": null
+  },
+  {
+    "id": "broadcast-receiver", "name": "Receiving data with a BroadcastReceiver", "family": "device", "kind": "Coding exercise", "evidence": "Interview report",
+    "question": "Implement an Android data-receiving scenario using a BroadcastReceiver in Kotlin.",
+    "note": "The full scenario is unavailable. The candidate reports missing a long-running-work edge case. The post's timing claim is not used as current Android guidance.",
+    "source": "https://medium.com/@prabhat.rai1707/google-london-interview-experience-b0f61cd09061"
+  },
+  {
+    "id": "connectivity-service", "name": "Periodic connectivity check", "family": "device", "kind": "Coding exercise", "evidence": "Interview report",
+    "question": "Write an Android service that checks connectivity every fifteen minutes.",
+    "note": "A historical reported prompt, not a recommendation to implement periodic background work with an unrestricted service today.",
+    "source": "https://www.reddit.com/r/androiddev/comments/wseejt/comment/il043rr/"
+  },
+  {
+    "id": "heart-rate", "name": "Heart-rate data from a watch", "family": "device", "kind": "App design", "evidence": "Practice notes",
+    "question": "Design an app that reads heart-rate data from a smartwatch. Explain data sharing between apps and the Android services you would use.",
+    "note": "Saved practice prompt; Google attribution is unverified.", "source": null
+  },
+  {
+    "id": "settings-sync", "name": "Settings storage and sync", "family": "sync", "kind": "Client design", "evidence": "Interview report",
+    "question": "Design settings storage and UI lookup by setting ID. Use one API to detect changed setting values and another to save values on the server.",
+    "note": "Offline storage and MVVM were the candidate's solution, not additional stated requirements.",
+    "source": "https://medium.com/@himv1998/google-interview-sde-2-android-438e60d6031d"
+  },
+  {
+    "id": "todo-sync", "name": "Multi-device todo list", "family": "sync", "kind": "Client design", "evidence": "Practice notes",
+    "question": "Design creation, updates and synchronization for a todo list used on multiple devices. Discuss cancellation and conflicting updates.",
+    "note": "Saved practice prompt; Google attribution is unverified.", "source": null
+  },
+  {
+    "id": "event-planning", "name": "Collaborative event task list", "family": "sync", "kind": "Client design", "evidence": "Interview report",
+    "question": "Design a mobile task list that a family can use together while planning an event.",
+    "note": "Permissions, locations, categories and comments were the candidate's suggested clarification areas, not confirmed requirements.",
+    "source": "https://www.reddit.com/r/androiddev/comments/1e0kjtu/comment/lcopbtw/"
+  },
+  {
+    "id": "gmail-sync", "name": "Email synchronization", "family": "sync", "kind": "Client design", "evidence": "Practice notes",
+    "question": "Design a Gmail-like Android app, focusing on synchronization between the client and server.",
+    "note": "Saved practice prompt; Google attribution is unverified.", "source": null
+  },
+  {
+    "id": "spreadsheet", "name": "Mobile spreadsheet", "family": "sync", "kind": "Client design", "evidence": "Practice notes",
+    "question": "Design a mobile spreadsheet app within a short design round.",
+    "note": "The saved note mentions a half-hour design discussion and a separate Android-basics segment. It does not specify collaboration or formula requirements. Google attribution is unverified.", "source": null
+  },
+  {
+    "id": "document-editing", "name": "Collaborative document editing", "family": "sync", "kind": "Prompt missing", "evidence": "Practice notes",
+    "question": "Only the problem title was saved. Editing behavior, offline requirements and conflict rules are missing.",
+    "note": "Confirm the prompt before treating it as a particular Google Docs interview question.", "source": null
+  },
+  {
+    "id": "database-sync-discussion", "name": "MySQL and SQLite synchronization project", "family": "sync", "kind": "Project discussion", "evidence": "Interview report",
+    "question": "Discuss a candidate's existing project for bidirectional synchronization between MySQL and SQLite.",
+    "note": "This was a resume/project discussion, not evidence that the interviewer assigned a new offline-sync design.",
+    "source": "https://www.geeksforgeeks.org/interview-experiences/google-interview-experience/"
+  },
+  {
+    "id": "neon-logo", "name": "Shared neon-logo controller", "family": "live", "kind": "Client design", "evidence": "Interview report",
+    "question": "Design a mobile app for changing the color of each letter in an office GOOGLE sign. Multiple people can control it; handle concurrent changes, differences between displayed and actual state, and network failures.",
+    "note": "The linked candidate account reports these constraints.",
+    "source": "https://leetcode.com/discuss/post/5597647/Google-or-L5-Android-or-Offer/"
+  },
+  {
+    "id": "sockets", "name": "Socket-connected app", "family": "live", "kind": "Open-ended prompt", "evidence": "Practice notes",
+    "question": "Design an app involving sockets and discuss background-work choices.",
+    "note": "The saved account mentions WorkManager but gives no product or protocol requirements. Google attribution is unverified.", "source": null
+  },
+  {
+    "id": "ride-sharing", "name": "Ride-sharing app", "family": "live", "kind": "Prompt missing", "evidence": "Practice notes",
+    "question": "Only the problem title was saved. Client/backend scope and ride requirements are missing.",
+    "note": "Do not replace the missing prompt with a generic backend Uber design without agreeing on the scope.", "source": null
+  },
+  {
+    "id": "video-sharing", "name": "Video-sharing app", "family": "media", "kind": "Client design", "evidence": "Interview report",
+    "question": "Describe a mobile video-sharing app's architecture, including REST calls and blob storage at a basic backend level.",
+    "note": "The commenter confirms mobile but not Android versus iOS or level. Detailed backend internals were not part of the reported scope.",
+    "source": "https://www.reddit.com/r/androiddev/comments/1e0kjtu/comment/lcolzk8/"
+  },
+  {
+    "id": "chat-critique", "name": "Chat-app design review", "family": "review", "kind": "Design critique", "evidence": "Interview report",
+    "question": "Review an existing Android chat project and improve its design without RxJava or Retrofit.",
+    "note": "MVVM was proposed by the candidate, not required. The interviewer pushed beyond the initial Google-library suggestion.",
+    "source": "https://leetcode.com/discuss/post/418626/"
+  },
+  {
+    "id": "intermittent-failure", "name": "Intermittent update failure", "family": "review", "kind": "Debugging design", "evidence": "Interview report",
+    "question": "Investigate an information-updating app that stops working at particular times for some users. Discuss possible causes and the instrumentation needed to distinguish them.",
+    "note": "The report establishes neither a root cause nor a preferred analytics product.",
+    "source": "https://www.reddit.com/r/androiddev/comments/1e0kjtu/comment/lcolzk8/"
+  },
+  {
+    "id": "scroll-performance", "name": "Scrolling performance and background work", "family": "review", "kind": "Domain discussion", "evidence": "Interview report",
+    "question": "Discuss scrolling optimization, background operations and testing.",
+    "note": "Specific scenarios and follow-ups were not disclosed; this is not a reconstructed app-design exercise.",
+    "source": "https://leetcode.com/discuss/post/1110505/facebook-google-london-offers/"
+  },
+  {
+    "id": "debugging-topics", "name": "Android debugging topics", "family": "review", "kind": "Topic checklist", "evidence": "Practice notes",
+    "question": "Review ANRs, logs, UI jank, intermittent failures and performance investigations for browser, notes and document-viewer screens.",
+    "note": "A saved topic index, not full interview prompts. Google attribution is unverified.", "source": null
+  }
+]
