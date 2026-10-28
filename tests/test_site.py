@@ -23,14 +23,45 @@ class Document(HTMLParser):
         self.headings = []
         self.scripts = 0
         self.remote_assets = []
+        self.section_stack = []
+        self.top_sections = []
+        self.id_sections = {}
+        self.nav_links = {}
+        self.active_nav = None
+        self.decision_rows = []
+        self.active_row = None
+        self.diagram_sections = {}
+        self.sample_sections = []
+        self.pre_depth = 0
         self.feed(source)
 
     def handle_starttag(self, tag, attributes):
         attrs = dict(attributes)
+        if tag == "section":
+            if not self.section_stack:
+                self.top_sections.append(attrs.get("id"))
+            self.section_stack.append(attrs.get("id"))
         if "id" in attrs:
             self.ids.append(attrs["id"])
+            self.id_sections[attrs["id"]] = tuple(self.section_stack)
+        if tag == "nav":
+            self.active_nav = attrs.get("aria-label", "")
+            self.nav_links[self.active_nav] = []
         if tag in {"a", "link"} and "href" in attrs:
             self.links.append(attrs["href"])
+            if tag == "a" and self.active_nav is not None:
+                self.nav_links[self.active_nav].append(attrs["href"])
+            if tag == "a" and self.active_row is not None:
+                self.active_row["links"].append(attrs["href"])
+        if tag == "tr" and "data-question" in attrs:
+            self.active_row = {"question": attrs["data-question"], "links": []}
+            self.decision_rows.append(self.active_row)
+        if "data-render" in attrs:
+            self.diagram_sections[attrs["data-render"]] = tuple(self.section_stack)
+        if tag == "pre":
+            self.pre_depth += 1
+        if tag == "code" and self.pre_depth and "data-mermaid" not in attrs:
+            self.sample_sections.append(tuple(self.section_stack))
         if re.fullmatch("h[1-6]", tag):
             self.headings.append(int(tag[1]))
         if tag == "script":
@@ -39,6 +70,16 @@ class Document(HTMLParser):
             url = attrs.get("src", attrs.get("href", ""))
             if url.startswith(("https:", "http:", "//")):
                 self.remote_assets.append(url)
+
+    def handle_endtag(self, tag):
+        if tag == "section":
+            self.section_stack.pop()
+        if tag == "nav":
+            self.active_nav = None
+        if tag == "tr":
+            self.active_row = None
+        if tag == "pre":
+            self.pre_depth -= 1
 
 
 class SiteTests(unittest.TestCase):
@@ -122,6 +163,33 @@ class SiteTests(unittest.TestCase):
         backlinks = [link for link in wiki.links if link.startswith("../problems/countdown-timer/")]
         self.assertGreaterEqual(len(backlinks), 11)
         self.assertTrue(any("concepts/index.html#clocks" in link for link in doc.links))
+
+    def test_lesson_and_navigation_follow_the_requested_reading_order(self):
+        doc = self.pages[ROOT / "problems/countdown-timer/index.html"]
+        expected = ["scope", "clarifications", "decisions", "hld", "implementation", "code", "faqs", "concepts"]
+        self.assertEqual(doc.top_sections, expected + ["revision", "sources"])
+        nav = doc.nav_links["Progressive learning stages"]
+        self.assertEqual([urlsplit(link).fragment for link in nav[:8]], expected)
+        self.assertEqual({name: path[0] for name, path in doc.diagram_sections.items()},
+                         {"delivery": "hld", "work": "hld", "states": "implementation", "recovery": "implementation"})
+        self.assertEqual(len(doc.sample_sections), 3)
+        self.assertTrue(all(path == ("code",) for path in doc.sample_sections))
+        for anchor in ["q-delay", "q-clocks", "q-sleep", "q-pending", "q-alarm-process", "q-guarantee", "q-notification", "q-reboot", "q-off", "commit-gap", "notification-gap", "curiosity"]:
+            self.assertEqual(doc.id_sections[anchor][0], "faqs", anchor)
+
+    def test_each_clarification_maps_to_a_design_decision(self):
+        doc = self.pages[ROOT / "problems/countdown-timer/index.html"]
+        questions = {anchor for anchor in doc.ids if anchor.startswith("clarify-")}
+        mapped = [row["question"] for row in doc.decision_rows]
+        self.assertEqual(len(mapped), len(set(mapped)))
+        self.assertEqual(set(mapped), questions)
+        self.assertEqual(len(questions), 8)
+        for row in doc.decision_rows:
+            anchors = [urlsplit(link).fragment for link in row["links"]]
+            self.assertEqual(anchors[0], row["question"])
+            self.assertGreaterEqual(len(anchors), 2)
+            for target in anchors[1:]:
+                self.assertIn(doc.id_sections[target][0], {"hld", "implementation"})
 
 
 if __name__ == "__main__":

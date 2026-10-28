@@ -32,8 +32,12 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 Open http://127.0.0.1:8000/ for a local preview.
 
-Edit a worked lesson under `problems/` directly. Keep requirements, HLD, LLD,
-failure cases, tests, revision and references in that order where appropriate.
+Edit a worked lesson under `problems/` directly. Use this reading order:
+problem, clarification questions, what each answer changes, HLD, LLD,
+sample code, FAQs and concepts. Put diagrams beside the relevant HLD or LLD
+explanation. Map each clarification to a concrete decision, including how an
+alternative answer would change it. Include failure cases and tests in the LLD;
+keep revision notes and references after the main reading path.
 Add shared definitions to `concepts/index.html`, with a backlink to the lesson
 section and a short explanation of what is different in that problem.
 Do not mark a catalog question solved just because a related lesson exists.

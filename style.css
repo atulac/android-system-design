@@ -35,10 +35,11 @@ a:hover { text-decoration-thickness: 2px; }
 .rail .num { display: inline-block; width: 1.75rem; color: var(--accent); font-variant-numeric: tabular-nums; }
 .rail .rail-extra { border-top: 1px solid var(--line); padding-top: .8rem; }
 main { min-width: 0; max-width: 860px; }
-h1, h2, h3 { line-height: 1.2; text-wrap: balance; }
+h1, h2, h3, h4 { line-height: 1.2; text-wrap: balance; }
 h1 { font-size: clamp(2rem, 4vw, 2.8rem); letter-spacing: -.035em; margin: .4rem 0 1rem; max-width: 24ch; }
 h2 { font-size: clamp(1.45rem, 3vw, 1.9rem); letter-spacing: -.025em; margin: .5rem 0 1rem; }
 h3 { font-size: 1.08rem; margin: 1.7rem 0 .55rem; }
+h4 { font-size: 1rem; margin: 1.3rem 0 .5rem; }
 p { margin: .6rem 0 1.1rem; }
 p, li { max-width: 76ch; }
 strong { font-weight: 680; }
@@ -52,6 +53,7 @@ strong { font-weight: 680; }
 .meta, .source-note, .caption, figcaption { color: var(--muted); font-size: .82rem; line-height: 1.55; }
 .meta { margin: .7rem 0; }
 section.stage, article.concept { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+.subsection { margin-top: 2rem; }
 .takeaway { padding: .8rem 1rem; background: var(--tint); border-left: 3px solid var(--accent); margin: 1rem 0 1.3rem; }
 .takeaway p, .note p { margin: 0; }
 .note { padding: .8rem 1rem; background: var(--blue-tint); margin: 1rem 0; }
@@ -174,7 +176,8 @@ blockquote { padding: 0 0 0 1.2rem; margin: 1.1rem 0; border-left: 3px solid var
   h1 { font-size: 27pt; }
   h2 { font-size: 18pt; }
   h3 { font-size: 12pt; }
-  h1, h2, h3, summary, .stage-label { break-after: avoid; }
+  h4 { font-size: 11pt; }
+  h1, h2, h3, h4, summary, .stage-label { break-after: avoid; }
   section.stage, article.concept { padding-top: 1rem; margin-top: 1.4rem; }
   p, li { max-width: none; }
   figure, .takeaway, .note, .promise, .used-in, tr { break-inside: avoid; }

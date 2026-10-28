@@ -105,11 +105,11 @@ def render_index(entries):
     <section class="start-here" aria-labelledby="start-title">
       <p class="stage-label">Available walkthrough</p>
       <h2 id="start-title"><a href="problems/countdown-timer/index.html">Countdown timer</a></h2>
-      <p>Requirements, state transitions, timekeeping, high-level architecture, low-level interfaces, recovery and tests.</p>
+      <p>The problem, clarification questions, what the answers change, HLD and LLD diagrams, sample code, FAQs and concepts.</p>
       <p class="start-links"><a href="problems/countdown-timer/index.html#scope">Read from the start</a><a href="problems/countdown-timer/index.html#revision">Revision notes</a><a href="concepts/index.html">Concept reference</a></p>
     </section>
     <p class="meta">{len(entries)} questions and reference topics. Only the countdown timer has a worked walkthrough so far.</p>
-    <details class="study-notes"><summary>Using this with a study partner</summary><p>Choose one question from a group. Agree on requirements, draw a high-level design, then work through the data model, interfaces and failure cases. Compare your reasoning before reading a walkthrough. When a concept comes up again, use the reference entry and discuss what changes in the new problem.</p></details>
+    <details class="study-notes"><summary>Using this with a study partner</summary><p>Choose a problem and ask clarification questions. Explain which decision each answer changes before drawing the HLD and LLD. Then try the code, discuss the FAQs and revisit the shared concepts. Compare your reasoning before reading a walkthrough.</p></details>
     {"".join(sections)}
     <section class="stage" id="about" aria-labelledby="about-title">
       <h2 id="about-title">About the questions</h2>
@@ -117,7 +117,7 @@ def render_index(entries):
       <p><strong>Practice notes</strong> are saved exercises or topics whose Google attribution has not been independently verified. Entries marked <strong>Prompt missing</strong> retain only a title and need clarification. No worked solution is implied by listing a question.</p>
       <p>Question summaries are paraphrased. Source notes distinguish reported constraints from candidate choices and added practice variants. Private note links are not included. External discussions can move, require sign-in or become unavailable.</p>
       <h3>How the material is organized</h3>
-      <p>Worked problems introduce requirements before architecture, then cover implementation decisions and tests. The concept reference holds shared explanations and links back to their uses. This structure was informed by <a href="https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery">Hello Interview</a>, <a href="https://bytebytego.com/courses/system-design-interview/a-framework-for-system-design-interviews">ByteByteGo</a> and <a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a>; their prose and diagrams are not reproduced here.</p>
+      <p>Worked problems follow this order: problem, clarification questions, answer-to-decision mapping, high-level design, low-level design, sample code, FAQs and concepts. Diagrams sit beside the design they explain. The concept reference holds shared explanations and links back to their uses. The general reference structure was informed by <a href="https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery">Hello Interview</a>, <a href="https://bytebytego.com/courses/system-design-interview/a-framework-for-system-design-interviews">ByteByteGo</a> and <a href="https://github.com/donnemartin/system-design-primer">System Design Primer</a>; their prose and diagrams are not reproduced here.</p>
       <p class="source-note">Published scope: the mobile questions and supporting topics in the supplied preparation list. Backend-only and scope-unclear entries from the broader research collection are excluded. Reviewed 28 October 2026. Independent study notes; not affiliated with Google or the referenced publishers.</p>
     </section>
     <footer class="footer-nav"><a href="index.html#main">Back to top</a><a href="questions.csv" download>Download question list (CSV)</a><a href="https://github.com/atulac/android-system-design">Source on GitHub</a></footer>
